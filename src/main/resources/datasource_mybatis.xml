@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/tx
+	   http://www.springframework.org/schema/tx/spring-tx.xsd"
+	   default-lazy-init="true">
+
+	<!-- 数据源配置, 使用DBCP数据库连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+		<property name="url" value="${jdbc_url}" />
+		<property name="username" value="${jdbc_username}"/>
+		<property name="password" value="${jdbc_password}"/>
+
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="${dbcp_initialSize}" />
+		<!-- 连接池最大空闲 -->
+		<property name="maxActive" value="${dbcp_maxActive}" />
+		<!-- 连接池最小空闲 -->
+		<property name="minIdle" value="${dbcp_minIdle}" />
+		<!-- 获取连接的最大等待时间 -->
+		<property name="maxWait" value="${dbcp_maxWait}" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+	</bean>
+
+
+	<bean id="sqlSessionFactory_new_backend" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:mapper/*Mapper.xml</value>
+			</array>
+		</property>
+	</bean>
+
+    <bean id="mybatisConfigurer_new_backend" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_new_backend"/>
+        <property name="basePackage" value="ss/upupoo/com.**.mapper" />
+    </bean>
+
+    <!-- 事务配置 -->
+    <bean id="transactionManager_new_backend"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!--  配置事务传播特性 -->
+	<tx:advice id="newBackendTxAdvice" transaction-manager="transactionManager_new_backend">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="save*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="add*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="create*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="import*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="edit*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="modify*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="delete*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="remove*" propagation="REQUIRED" read-only="false" isolation="READ_COMMITTED" rollback-for="java.lang.Exception" />
+			<tx:method name="*" read-only="true" rollback-for="java.lang.Exception" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!--  配置参与事务的类 -->
+	<!--<aop:config expose-proxy="true" proxy-target-class="true">-->
+		<!--<aop:pointcut id="pointcut_new_backend" expression="execution(* cn.mayn.com.*.service.*.*(..))" />-->
+		<!--<aop:advisor pointcut-ref="pointcut_new_backend" advice-ref="newBackendTxAdvice" />-->
+	<!--</aop:config>-->
+
+
+	<tx:annotation-driven proxy-target-class="true" transaction-manager="transactionManager_new_backend" />
+</beans>

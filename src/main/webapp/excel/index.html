@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>数据首页</title>
+    <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script></head>
+<body>
+    <table id="dataTable">
+        <thead>
+        <tr>
+            <th>name</th>
+          <th>age</th>
+          <th>workAge</th>
+          <th>wages</th>
+          <th>phone</th>
+          <th>email</th>
+        </tr>
+    </thead>
+      <tbody class="table_node">
+        <tr class="node" >
+            <!--动态载入数据部分-->
+          </tr>
+    </tbody>
+    </table>
+</body>
+<script type="application/javascript">
+//     window.onload = function () {
+//         $.post({
+//             url: "localhost:8080/excel/getData",
+//             contentType: "application/json;cherset=utf-8",
+//             dataType: "json",
+//             success: function (data) {
+//                 $('.node').empty();
+//                 //取出后端传过来的list值
+//                 var list = data.data
+//                 //对list值进行便利
+//                 $.each(list, function (index, n) {
+//                     var rowTr = document.createElement('tr')
+// //找到html的tr节点
+//                     rowTr.className = "node"
+//                     var child = "<td><input type='text' value='+ list[index] + '/></td>"
+//                         + "<td><input type='number' value='+ list[index] + '/></td>"
+//                         + "<td><input type='number' value='+ list[index] + '/></td>"
+//                         + "<td><input type='number' value='+ list[index] + '/></td>"
+//                         + "<td><input type='number' value='+ list[index] + '/></td>"
+//                         +"<td><input type='text' value='+ list[index] + '/></td>"
+// //将要展示的信息写入页面
+//                     rowTr.innerHTML = child
+// //将信息追加
+//                     $(".node").append(rowTr)
+//                 });
+//             }
+//         });
+//     }
+window.onload = function () {
+    var list = '${entitys}';
+    Entitys = list.split(",");
+    $.each(Entitys, function (index, n) {
+        var rowTr = document.createElement('tr')
+        //找到html的tr节点
+        rowTr.className = "node"
+        var child = "<td><input type='text' value='+ list[index] + '/></td>"
+            + "<td><input type='number' value='+ list[index] + '/></td>"
+            + "<td><input type='number' value='+ list[index] + '/></td>"
+            + "<td><input type='number' value='+ list[index] + '/></td>"
+            + "<td><input type='number' value='+ list[index] + '/></td>"
+            + "<td><input type='text' value='+ list[index] + '/></td>"
+        //将要展示的信息写入页面
+        rowTr.innerHTML = child
+        //将信息追加
+        $(".node").append(rowTr)
+    });
+}
+
+    
+    function getAllData() {
+        // 获取table
+        var table = document.getElementById("dataTable");
+        var rows =tab.rows;
+        // 遍历表格
+        for (var i = 0;i<rows.length;i++){
+            for (var j = 0;j<rows[i].cells.length;j++){
+
+            }
+        }
+    }
+
+    function getData(){
+        var k;
+        var att = {};//创建一个空的json
+        var name,age,workAge,wages,phone,email;
+        var Array = [];//一个空的数组
+        $('#tbody tr').each(function(){//遍历每一个tr
+            var st = [];//空数组，用于存放每一个tr里td的值
+            var chil = $(this).children('td');
+            var tdcount = chil.length;
+            var txt;
+//alert(tdcount);
+            for (k=0;k<tdcount;k++) {//循环得到td的四项内容值
+                txt = chil.eq(k).children('input').val();
+//alert(txt)
+                st.push(txt);
+            }
+            name = st[0];
+            age = st[1];
+            workAge = st[2];
+            wages = st[3];
+            phone = st[4];
+            email = st[5];
+            att = {
+                'name':name,
+                'age':age,
+                'workAge':workAge,
+                'wages':wages,
+                'phone':phone,
+                'email':email
+            };//把每一个tr的数据写成一个json数据
+//console.log(att);
+            Array.push(att);//把json数据写入数组
+        })
+        console.log(Array);
+    }
+</script>
+</html>
